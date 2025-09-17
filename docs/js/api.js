@@ -20,15 +20,21 @@ const API = {
 
         // 로그인 처리
         if (endpoint === '/auth/login') {
+            console.log('🔐 로그인 시도:', data);
             const users = Storage.load('users', DemoData.users);
+            console.log('📋 사용자 목록:', users);
+            console.log('🔍 찾는 정보:', { email: data.email, password: data.password });
+
             const user = users.find(u =>
                 u.email === data.email && u.password === data.password
             );
+            console.log('✅ 찾은 사용자:', user);
 
             if (user) {
                 const token = 'demo_token_' + Date.now();
                 Storage.save('auth_token', token);
                 Storage.save('current_user', user);
+                console.log('🎉 로그인 성공!');
                 return {
                     success: true,
                     data: {
@@ -37,6 +43,7 @@ const API = {
                     }
                 };
             } else {
+                console.log('❌ 로그인 실패: 사용자를 찾을 수 없음');
                 return { success: false, error: '이메일 또는 비밀번호가 올바르지 않습니다.' };
             }
         }
