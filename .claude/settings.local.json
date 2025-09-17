@@ -32,7 +32,11 @@
       "Bash(TASKKILL /F /PID 23740)",
       "Bash(TASKKILL /F /PID 7116)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(gh:*)",
+      "Bash(git remote add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

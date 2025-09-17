@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미세안 공급망 관리 시스템</title>
+    <meta name="description" content="요양원, 병원, 경로당 전문 B2B 공급망 관리 플랫폼">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .demo-button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255,107,107,0.3);
+        }
+
+        .demo-button:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
+        }
+
+        .tech-stack {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            color: white;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tech-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏥 미세안 공급망 관리 시스템</h1>
+            <p>요양원 · 병원 · 경로당 전문 B2B 공급망 관리 플랫폼</p>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number">8</span>
+                    <span>권한 체계</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100+</span>
+                    <span>제품 관리</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span>시스템 운영</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">실시간</span>
+                    <span>수익 계산</span>
+                </div>
+            </div>
+
+            <a href="#features" class="demo-button">시스템 살펴보기</a>
+            <a href="https://github.com/iddiko/miseane-supply-management" class="demo-button" target="_blank">GitHub 보기</a>
+        </header>
+
+        <section id="features" class="features">
+            <div class="feature-card">
+                <h3>🛍️ 제품 관리</h3>
+                <p>
+                    <strong>다층 가격 구조</strong><br>
+                    • 원가, 판매가, 공장수익 분리 관리<br>
+                    • 자동 수익 계산 (판매가 - 원가 - 공장수익)<br>
+                    • 카테고리별 제품 분류<br>
+                    • 공급업체 연동 관리
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>👥 사용자 관리</h3>
+                <p>
+                    <strong>8단계 역할 기반 권한</strong><br>
+                    • 시스템 관리자<br>
+                    • 본사/지사/지점 관리자<br>
+                    • 협력사 및 병원 담당자<br>
+                    • 세분화된 권한 제어
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>🏢 사이트 관리</h3>
+                <p>
+                    <strong>다양한 시설 유형 지원</strong><br>
+                    • 요양원, 경로당, 병원<br>
+                    • 거래처별 맞춤 가격 설정<br>
+                    • 계약 관리 및 상태 추적<br>
+                    • 인원수/병상수 기반 관리
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>📊 수익 배분</h3>
+                <p>
+                    <strong>자동화된 수익 배분 시스템</strong><br>
+                    • 공장(32%) + 본사(3%) + 지사(25%)<br>
+                    • 지점(2%) + 전국(2%) + 지역(3%)<br>
+                    • 구역(5%) + 병원(30%)<br>
+                    • 실시간 수익 트래킹
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>🔐 보안 시스템</h3>
+                <p>
+                    <strong>강력한 보안 및 인증</strong><br>
+                    • JWT 토큰 기반 인증<br>
+                    • 역할 기반 접근 제어 (RBAC)<br>
+                    • 비밀번호 암호화 (bcrypt)<br>
+                    • 감사 로그 및 추적
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <h3>📈 실시간 리포트</h3>
+                <p>
+                    <strong>데이터 기반 의사결정</strong><br>
+                    • 매출 및 수익 대시보드<br>
+                    • 재고 부족 알림<br>
+                    • 사이트별 성과 분석<br>
+                    • 배분 현황 실시간 모니터링
+                </p>
+            </div>
+        </section>
+
+        <section class="tech-stack">
+            <h2 style="text-align: center; margin-bottom: 30px;">🚀 기술 스택</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <strong>Backend</strong><br>
+                    Node.js<br>
+                    Express.js
+                </div>
+                <div class="tech-item">
+                    <strong>Database</strong><br>
+                    SQLite3<br>
+                    (PostgreSQL 호환)
+                </div>
+                <div class="tech-item">
+                    <strong>Frontend</strong><br>
+                    Vanilla JS<br>
+                    HTML5/CSS3
+                </div>
+                <div class="tech-item">
+                    <strong>인증</strong><br>
+                    JWT<br>
+                    bcrypt
+                </div>
+                <div class="tech-item">
+                    <strong>배포</strong><br>
+                    GitHub Pages<br>
+                    Vercel Ready
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>&copy; 2024 (주)미세안. All rights reserved.</p>
+            <p>🌐 <strong>plugon.co.kr</strong> | 📧 support@miseane.com</p>
+        </footer>
+    </div>
+
+    <script>
+        // 부드러운 스크롤
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // 통계 카운터 애니메이션
+        const animateCounters = () => {
+            const counters = document.querySelectorAll('.stat-number');
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = counter.textContent;
+                    if (!isNaN(target)) {
+                        const count = +counter.innerHTML;
+                        const increment = target / 100;
+
+                        if (count < target) {
+                            counter.innerHTML = Math.ceil(count + increment);
+                            setTimeout(updateCount, 20);
+                        } else {
+                            counter.innerHTML = target;
+                        }
+                    }
+                };
+                updateCount();
+            });
+        };
+
+        // 페이지 로드 시 카운터 애니메이션 시작
+        window.addEventListener('load', () => {
+            setTimeout(animateCounters, 500);
+        });
+    </script>
+</body>
+</html>
