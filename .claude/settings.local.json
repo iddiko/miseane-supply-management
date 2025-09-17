@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir)",
+      "Bash(start login.html)",
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npm run init-db:*)",
+      "Bash(npm start)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(TASKKILL /F /PID 12512)",
+      "Bash(npx kill-port:*)",
+      "Bash(node:*)",
+      "Bash(find:*)",
+      "Bash(sqlite3:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)",
+      "Bash(dir:*)",
+      "Bash(del \"D:\\(주)미세안\\miseane\\database\\fix_roles.js\")",
+      "Bash(del:*)",
+      "Bash(start \"http://localhost:3000/admin.html\")",
+      "Bash(ls:*)",
+      "Bash(tasklist:*)",
+      "Bash(start \"http://localhost:3000\")",
+      "Bash(TASKKILL /F /PID 13252)",
+      "Bash(wc:*)",
+      "Bash(set PORT=3001)",
+      "Bash(TASKKILL /F /PID 6644)",
+      "Bash(TASKKILL /F /PID 19364)",
+      "Bash(TASKKILL /F /PID 23740)",
+      "Bash(TASKKILL /F /PID 7116)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
