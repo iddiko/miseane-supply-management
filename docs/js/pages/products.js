@@ -15,6 +15,11 @@ const Products = {
         const contentContainer = document.querySelector('.content-container');
         contentContainer.innerHTML = this.getTemplate();
 
+        // 저장된 설정 복원
+        const savedViewMode = localStorage.getItem('productsViewMode') || 'table';
+        const savedPageSize = localStorage.getItem('productsPageSize') || '10';
+        this.pageSize = parseInt(savedPageSize);
+
         // 초기 데이터 로드
         await this.loadCategories();
         await this.loadSuppliers();
@@ -22,108 +27,243 @@ const Products = {
 
         // 이벤트 리스너 설정
         this.setupEventListeners();
+
+        // 뷰 모드 설정
+        this.setViewMode(savedViewMode);
+
+        // 애니메이션 효과
+        this.animateElements();
+    },
+
+    // 애니메이션 효과
+    animateElements() {
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.3s ease';
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
     },
 
     getTemplate() {
         return `
             <div class="page-header">
-                <h1>제품 관리</h1>
-                <div class="page-actions">
-                    <button class="btn btn-primary" onclick="Products.showAddModal()">
-                        <i class="fas fa-plus"></i>
-                        제품 추가
-                    </button>
-                    <button class="btn btn-secondary" onclick="Products.exportData()">
-                        <i class="fas fa-download"></i>
-                        내보내기
-                    </button>
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1><i class="fas fa-box"></i> 제품 관리</h1>
+                        <p class="header-subtitle">제품 정보와 가격을 효율적으로 관리하세요</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="action-group">
+                            <button class="btn btn-primary" onclick="Products.showAddModal()">
+                                <i class="fas fa-plus"></i>
+                                <span>제품 추가</span>
+                            </button>
+                            <button class="btn btn-secondary" onclick="Products.exportData()">
+                                <i class="fas fa-download"></i>
+                                <span>내보내기</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="page-content">
-                <!-- 필터 섹션 -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h3>필터</h3>
+                <!-- 빠른 통계 카드 -->
+                <div class="quick-stats" id="productStats">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalProducts">0</div>
+                            <div class="stat-label">총 제품 수</div>
+                        </div>
                     </div>
-                    <div class="card-content">
-                        <div class="filter-form">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label>검색</label>
-                                    <input type="text" id="searchInput" placeholder="제품명, 제품코드 검색...">
-                                </div>
-                                <div class="form-group">
-                                    <label>카테고리</label>
-                                    <select id="categoryFilter">
-                                        <option value="">전체</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>공급업체</label>
-                                    <select id="supplierFilter">
-                                        <option value="">전체</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>상태</label>
-                                    <select id="statusFilter">
-                                        <option value="">전체</option>
-                                        <option value="1" selected>활성</option>
-                                        <option value="0">비활성</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-primary" onclick="Products.applyFilters()">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="activeProducts">0</div>
+                            <div class="stat-label">활성 제품</div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="lowStockProducts">0</div>
+                            <div class="stat-label">재고 부족</div>
+                        </div>
+                    </div>
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-icon">
+                            <i class="fas fa-won-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="avgProfit">0%</div>
+                            <div class="stat-label">평균 수익률</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 고급 필터 섹션 -->
+                <div class="filter-panel">
+                    <div class="filter-header">
+                        <h3><i class="fas fa-filter"></i> 검색 및 필터</h3>
+                        <button class="btn btn-link" onclick="Products.toggleAdvancedFilters()" id="advancedFilterToggle">
+                            <i class="fas fa-chevron-down"></i> 고급 검색
+                        </button>
+                    </div>
+                    <div class="filter-content">
+                        <div class="basic-filters">
+                            <div class="search-group">
+                                <div class="search-box">
+                                    <input type="text" id="searchInput" placeholder="제품명, 제품코드로 검색...">
+                                    <button class="search-btn" onclick="Products.applyFilters()">
                                         <i class="fas fa-search"></i>
-                                        검색
-                                    </button>
-                                    <button class="btn btn-secondary" onclick="Products.resetFilters()">
-                                        <i class="fas fa-undo"></i>
-                                        초기화
                                     </button>
                                 </div>
+                            </div>
+                            <div class="filter-group">
+                                <select id="categoryFilter" class="form-select">
+                                    <option value="">모든 카테고리</option>
+                                </select>
+                                <select id="supplierFilter" class="form-select">
+                                    <option value="">모든 공급업체</option>
+                                </select>
+                                <select id="statusFilter" class="form-select">
+                                    <option value="">모든 상태</option>
+                                    <option value="1" selected>활성</option>
+                                    <option value="0">비활성</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="advanced-filters" id="advancedFilters" style="display: none;">
+                            <div class="filter-row">
+                                <div class="filter-item">
+                                    <label>가격 범위</label>
+                                    <div class="range-inputs">
+                                        <input type="number" id="minPrice" placeholder="최소가">
+                                        <span>~</span>
+                                        <input type="number" id="maxPrice" placeholder="최대가">
+                                    </div>
+                                </div>
+                                <div class="filter-item">
+                                    <label>재고 수준</label>
+                                    <select id="stockLevelFilter">
+                                        <option value="">모든 수준</option>
+                                        <option value="low">재고 부족</option>
+                                        <option value="normal">정상</option>
+                                        <option value="high">과재고</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn btn-primary" onclick="Products.applyFilters()">
+                                    <i class="fas fa-search"></i> 검색
+                                </button>
+                                <button class="btn btn-secondary" onclick="Products.resetFilters()">
+                                    <i class="fas fa-undo"></i> 초기화
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 제품 테이블 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>제품 목록</h3>
-                        <div class="card-actions">
-                            <span id="totalCount">총 0개</span>
+                <!-- 제품 목록 -->
+                <div class="data-panel">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <h3><i class="fas fa-list"></i> 제품 목록</h3>
+                            <span class="result-count" id="totalCount">총 0개</span>
+                        </div>
+                        <div class="panel-actions">
+                            <div class="view-toggle">
+                                <button class="view-btn active" onclick="Products.setViewMode('table')" data-view="table">
+                                    <i class="fas fa-table"></i>
+                                </button>
+                                <button class="view-btn" onclick="Products.setViewMode('card')" data-view="card">
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                            </div>
+                            <div class="sort-controls">
+                                <select id="sortBy" onchange="Products.applySorting()">
+                                    <option value="name">이름순</option>
+                                    <option value="created_at">등록일순</option>
+                                    <option value="sale_price">가격순</option>
+                                    <option value="available_stock">재고순</option>
+                                </select>
+                                <button class="sort-direction" onclick="Products.toggleSortDirection()" id="sortDirection">
+                                    <i class="fas fa-sort-alpha-down"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-content">
-                        <div class="table-responsive">
-                            <table class="table" id="productsTable">
-                                <thead>
-                                    <tr>
-                                        <th>제품코드</th>
-                                        <th>제품명</th>
-                                        <th>카테고리</th>
-                                        <th>공급업체</th>
-                                        <th>단위</th>
-                                        <th>가격정보</th>
-                                        <th>재고</th>
-                                        <th>등록자</th>
-                                        <th>상태</th>
-                                        <th>등록일</th>
-                                        <th>작업</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="11" class="text-center">로딩 중...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="panel-content">
+                        <!-- 테이블 뷰 -->
+                        <div class="table-view" id="tableView">
+                            <div class="modern-table">
+                                <table class="products-table" id="productsTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable" onclick="Products.sortBy('product_code')">
+                                                제품코드 <i class="fas fa-sort"></i>
+                                            </th>
+                                            <th class="sortable" onclick="Products.sortBy('name')">
+                                                제품명 <i class="fas fa-sort"></i>
+                                            </th>
+                                            <th>카테고리</th>
+                                            <th>공급업체</th>
+                                            <th>단위</th>
+                                            <th class="sortable" onclick="Products.sortBy('sale_price')">
+                                                가격정보 <i class="fas fa-sort"></i>
+                                            </th>
+                                            <th class="sortable" onclick="Products.sortBy('available_stock')">
+                                                재고 <i class="fas fa-sort"></i>
+                                            </th>
+                                            <th>상태</th>
+                                            <th class="sortable" onclick="Products.sortBy('created_at')">
+                                                등록일 <i class="fas fa-sort"></i>
+                                            </th>
+                                            <th class="actions-col">작업</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="loading-row">
+                                            <td colspan="10">
+                                                <div class="loading-content">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                    <span>로딩 중...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 카드 뷰 -->
+                        <div class="card-view" id="cardView" style="display: none;">
+                            <div class="products-grid" id="productsGrid">
+                                <!-- 카드들이 여기에 동적으로 생성됩니다 -->
+                            </div>
                         </div>
 
                         <!-- 페이지네이션 -->
-                        <div class="pagination-wrapper">
+                        <div class="pagination-container">
+                            <div class="pagination-info" id="paginationInfo">
+                                <!-- 페이지 정보가 여기에 표시됩니다 -->
+                            </div>
                             <div class="pagination" id="pagination">
                                 <!-- 페이지네이션이 여기에 동적으로 생성됩니다 -->
                             </div>
@@ -231,60 +371,109 @@ const Products = {
         const tbody = document.querySelector('#productsTable tbody');
         if (!tbody) return;
 
+        // 통계 업데이트
+        this.updateStats();
+
         if (this.currentData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="11" class="text-center">등록된 제품이 없습니다.</td></tr>';
+            tbody.innerHTML = `
+                <tr class="no-data-row">
+                    <td colspan="10">
+                        <div class="no-data-content">
+                            <i class="fas fa-box-open"></i>
+                            <h4>등록된 제품이 없습니다</h4>
+                            <p>새로운 제품을 추가해 보세요.</p>
+                            <button class="btn btn-primary" onclick="Products.showAddModal()">
+                                <i class="fas fa-plus"></i> 제품 추가
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
             return;
         }
 
-        tbody.innerHTML = this.currentData.map(product => `
-            <tr>
-                <td><strong>${product.product_code}</strong></td>
-                <td>
-                    <div class="product-info">
-                        <strong>${product.name}</strong>
-                        ${product.description ? `<br><small class="text-muted">${product.description}</small>` : ''}
-                    </div>
-                </td>
-                <td><span class="badge badge-info">${product.category_name || '-'}</span></td>
-                <td>${product.supplier_name || '-'}</td>
-                <td>${product.unit}</td>
-                <td class="text-right">
-                    <div class="price-info">
-                        <strong>₩${Utils.formatNumber(product.sale_price || 0)}</strong><br>
-                        <small class="text-muted">원가: ₩${Utils.formatNumber(product.cost_price || 0)}</small><br>
-                        <small class="text-success">수익: ₩${Utils.formatNumber(product.calculated_profit || 0)}</small>
-                    </div>
-                </td>
-                <td class="text-right">
-                    <span class="stock-level ${this.getStockStatusClass(product)}">
-                        ${Utils.formatNumber(product.available_stock || 0)}
-                    </span>
-                </td>
-                <td>
-                    <div class="creator-info">
-                        <strong>${product.created_by_name || '시스템'}</strong>
-                        <br><small class="text-muted">${product.created_by_email || '-'}</small>
-                    </div>
-                </td>
-                <td>
-                    <span class="badge ${product.is_active ? 'badge-success' : 'badge-secondary'}">
-                        ${product.is_active ? '활성' : '비활성'}
-                    </span>
-                </td>
-                <td>${Utils.formatDate(product.created_at)}</td>
-                <td class="actions">
-                    <button class="btn btn-sm btn-info" onclick="Products.showDetailsModal(${product.id})" title="상세보기">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn btn-sm btn-warning" onclick="Products.showEditModal(${product.id})" title="수정">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger" onclick="Products.deleteProduct(${product.id})" title="삭제">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = this.currentData.map(product => {
+            const profitPercent = product.sale_price > 0 ?
+                ((product.calculated_profit / product.sale_price) * 100).toFixed(1) : 0;
+
+            return `
+                <tr class="product-row" data-id="${product.id}">
+                    <td>
+                        <div class="product-code">
+                            <strong>${product.product_code}</strong>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="product-info">
+                            <div class="product-name">${product.name}</div>
+                            ${product.description ? `<div class="product-desc">${product.description}</div>` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="category-badge">${product.category_name || '-'}</span>
+                    </td>
+                    <td>
+                        <div class="supplier-info">${product.supplier_name || '-'}</div>
+                    </td>
+                    <td>
+                        <span class="unit-badge">${product.unit}</span>
+                    </td>
+                    <td>
+                        <div class="price-details">
+                            <div class="sale-price">₩${Utils.formatNumber(product.sale_price || 0)}</div>
+                            <div class="cost-info">
+                                <span class="cost-price">원가: ₩${Utils.formatNumber(product.cost_price || 0)}</span>
+                            </div>
+                            <div class="profit-info">
+                                <span class="profit-amount ${product.calculated_profit >= 0 ? 'positive' : 'negative'}">
+                                    수익: ₩${Utils.formatNumber(product.calculated_profit || 0)} (${profitPercent}%)
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="stock-info">
+                            <span class="stock-level ${this.getStockStatusClass(product)}">
+                                ${Utils.formatNumber(product.available_stock || 0)}
+                            </span>
+                            <div class="stock-indicator ${this.getStockStatusClass(product)}">
+                                ${this.getStockStatusText(product)}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="status-container">
+                            <span class="status-badge ${product.is_active ? 'active' : 'inactive'}">
+                                <i class="fas ${product.is_active ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                                ${product.is_active ? '활성' : '비활성'}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="date-info">
+                            <div class="date">${Utils.formatDate(product.created_at)}</div>
+                            <div class="creator">${product.created_by_name || '시스템'}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn view-btn" onclick="Products.showDetailsModal(${product.id})" title="상세보기">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="action-btn edit-btn" onclick="Products.showEditModal(${product.id})" title="수정">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="Products.deleteProduct(${product.id})" title="삭제">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        // 카드 뷰도 업데이트
+        this.renderCards();
     },
 
     getStockStatusClass(product) {
@@ -347,8 +536,25 @@ const Products = {
         this.currentFilters.category_id = document.getElementById('categoryFilter').value;
         this.currentFilters.supplier_id = document.getElementById('supplierFilter').value;
         this.currentFilters.is_active = document.getElementById('statusFilter').value;
+
+        // 고급 필터
+        const minPrice = document.getElementById('minPrice')?.value;
+        const maxPrice = document.getElementById('maxPrice')?.value;
+        const stockLevel = document.getElementById('stockLevelFilter')?.value;
+
+        if (minPrice) this.currentFilters.min_price = minPrice;
+        if (maxPrice) this.currentFilters.max_price = maxPrice;
+        if (stockLevel) this.currentFilters.stock_level = stockLevel;
+
         this.currentPage = 1;
         this.loadProducts();
+
+        // 필터 적용 효과
+        const filterPanel = document.querySelector('.filter-panel');
+        filterPanel.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+            filterPanel.style.transform = 'scale(1)';
+        }, 150);
     },
 
     resetFilters() {
@@ -884,16 +1090,29 @@ const Products = {
 
         // 수익 = 판매가 - 원가 - 공장수익
         const calculatedProfit = salePrice - costPrice - factoryProfit;
+        const profitPercent = salePrice > 0 ? (calculatedProfit / salePrice * 100).toFixed(1) : 0;
 
         calculatedProfitInput.value = calculatedProfit.toFixed(2);
 
-        // 수익이 음수인 경우 경고 표시
+        // 수익률 표시 업데이트
+        let profitPercentDisplay = calculatedProfitInput.parentNode.querySelector('.profit-percent');
+        if (!profitPercentDisplay) {
+            profitPercentDisplay = document.createElement('small');
+            profitPercentDisplay.className = 'profit-percent';
+            calculatedProfitInput.parentNode.appendChild(profitPercentDisplay);
+        }
+        profitPercentDisplay.textContent = `수익률: ${profitPercent}%`;
+
+        // 수익에 따른 스타일 설정
         if (calculatedProfit < 0) {
-            calculatedProfitInput.style.color = '#dc3545'; // 빨간색
+            calculatedProfitInput.style.color = '#dc3545';
             calculatedProfitInput.style.fontWeight = 'bold';
+            profitPercentDisplay.style.color = '#dc3545';
+            profitPercentDisplay.textContent += ' (손실)';
         } else {
-            calculatedProfitInput.style.color = '#28a745'; // 초록색
+            calculatedProfitInput.style.color = '#28a745';
             calculatedProfitInput.style.fontWeight = 'bold';
+            profitPercentDisplay.style.color = '#28a745';
         }
     }
 };

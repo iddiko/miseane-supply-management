@@ -25,100 +25,95 @@ const Suppliers = {
     getTemplate() {
         return `
             <div class="page-header">
-                <div>
-                    <h1 class="dashboard-title">공급업체 관리</h1>
-                    <p class="dashboard-subtitle">공급업체 정보를 통합 관리합니다</p>
-                </div>
-                <div class="page-actions">
-                    <button class="btn btn-secondary" onclick="Suppliers.exportData()">
-                        <i class="fas fa-download"></i> 내보내기
-                    </button>
-                    <button class="btn btn-primary" onclick="Suppliers.showAddModal()">
-                        <i class="fas fa-plus"></i> 공급업체 추가
-                    </button>
+                <div class="header-content">
+                    <div class="header-title">
+                        <h1><i class="fas fa-truck"></i> 공급업체 관리</h1>
+                        <p class="header-subtitle">신뢰할 수 있는 공급업체 파트너십을 구축하고 관리하세요</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="action-group">
+                            <button class="btn btn-secondary" onclick="Suppliers.exportData()">
+                                <i class="fas fa-download"></i>
+                                <span>내보내기</span>
+                            </button>
+                            <button class="btn btn-primary" onclick="Suppliers.showAddModal()">
+                                <i class="fas fa-plus"></i>
+                                <span>공급업체 추가</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 통계 카드 섹션 -->
-            <div class="stats-grid" style="margin-bottom: 2rem;">
-                <div class="stat-card suppliers">
-                    <div class="stat-header">
-                        <div class="stat-title">전체 공급업체</div>
-                        <div class="stat-icon">
-                            <i class="fas fa-building"></i>
-                        </div>
+            <!-- 빠른 통계 카드 -->
+            <div class="quick-stats" id="supplierStats">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-icon">
+                        <i class="fas fa-building"></i>
                     </div>
-                    <div class="stat-value" id="totalSuppliers">-</div>
-                    <div class="stat-change neutral">
-                        <i class="fas fa-equals"></i>
-                        <span>전체 등록업체</span>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalSuppliers">0</div>
+                        <div class="stat-label">전체 공급업체</div>
                     </div>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">활성 업체</div>
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
+                <div class="stat-card stat-card-success">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
                     </div>
-                    <div class="stat-value" id="activeSuppliers">-</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        <span id="activePercentage">-</span>
+                    <div class="stat-info">
+                        <div class="stat-value" id="activeSuppliers">0</div>
+                        <div class="stat-label">활성 업체</div>
+                        <div class="stat-trend" id="activePercentage">0%</div>
                     </div>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">평균 평점</div>
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
-                            <i class="fas fa-star"></i>
-                        </div>
-                    </div>
-                    <div class="stat-value" id="averageRating">-</div>
-                    <div class="stat-change neutral">
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">
                         <i class="fas fa-star"></i>
-                        <span>5점 만점</span>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="averageRating">0.0</div>
+                        <div class="stat-label">평균 평점</div>
+                        <div class="stat-trend">5점 만점</div>
                     </div>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-title">이번 달 신규</div>
-                        <div class="stat-icon" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);">
-                            <i class="fas fa-plus-circle"></i>
-                        </div>
+                <div class="stat-card stat-card-info">
+                    <div class="stat-icon">
+                        <i class="fas fa-plus-circle"></i>
                     </div>
-                    <div class="stat-value" id="newSuppliers">-</div>
-                    <div class="stat-change positive">
-                        <i class="fas fa-arrow-up"></i>
-                        <span>신규 등록</span>
+                    <div class="stat-info">
+                        <div class="stat-value" id="newSuppliers">0</div>
+                        <div class="stat-label">이번 달 신규</div>
+                        <div class="stat-trend">신규 등록</div>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h2>공급업체 목록</h2>
-                    <div class="card-header-actions">
-                        <div class="search-container">
+            <!-- 고급 필터 섹션 -->
+            <div class="filter-panel">
+                <div class="filter-header">
+                    <h3><i class="fas fa-filter"></i> 검색 및 필터</h3>
+                    <button class="btn btn-link" onclick="Suppliers.toggleAdvancedFilters()" id="advancedFilterToggle">
+                        <i class="fas fa-chevron-down"></i> 고급 검색
+                    </button>
+                </div>
+                <div class="filter-content">
+                    <div class="basic-filters">
+                        <div class="search-group">
                             <div class="search-box">
-                                <i class="fas fa-search"></i>
                                 <input type="text" id="supplierSearch" placeholder="공급업체명, 담당자, 연락처로 검색...">
-                                <button type="button" class="clear-search" onclick="Suppliers.clearSearch()">
-                                    <i class="fas fa-times"></i>
+                                <button class="search-btn" onclick="Suppliers.searchSuppliers()">
+                                    <i class="fas fa-search"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="filter-container">
-                            <select id="statusFilter" class="filter-select">
-                                <option value="">전체 상태</option>
+                        <div class="filter-group">
+                            <select id="statusFilter" class="form-select">
+                                <option value="">모든 상태</option>
                                 <option value="active">활성</option>
                                 <option value="inactive">비활성</option>
                             </select>
-                            <select id="ratingFilter" class="filter-select">
-                                <option value="">전체 등급</option>
+                            <select id="ratingFilter" class="form-select">
+                                <option value="">모든 등급</option>
                                 <option value="5">⭐⭐⭐⭐⭐ 5점</option>
                                 <option value="4">⭐⭐⭐⭐ 4점 이상</option>
                                 <option value="3">⭐⭐⭐ 3점 이상</option>
@@ -127,61 +122,130 @@ const Suppliers = {
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table" id="suppliersTable">
-                            <thead>
-                                <tr>
-                                    <th class="sortable" onclick="Suppliers.sortTable('company_name')">
-                                        <span>업체 정보</span>
-                                        <i class="fas fa-sort sort-icon"></i>
-                                    </th>
-                                    <th class="sortable" onclick="Suppliers.sortTable('contact_person')">
-                                        <span>담당자 정보</span>
-                                        <i class="fas fa-sort sort-icon"></i>
-                                    </th>
-                                    <th class="sortable" onclick="Suppliers.sortTable('rating')">
-                                        <span>평점</span>
-                                        <i class="fas fa-sort sort-icon"></i>
-                                    </th>
-                                    <th class="sortable" onclick="Suppliers.sortTable('status')">
-                                        <span>상태</span>
-                                        <i class="fas fa-sort sort-icon"></i>
-                                    </th>
-                                    <th class="sortable" onclick="Suppliers.sortTable('created_at')">
-                                        <span>등록일</span>
-                                        <i class="fas fa-sort sort-icon"></i>
-                                    </th>
-                                    <th style="width: 120px;">작업</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="6" class="text-center py-4">
-                                        <div class="loading-spinner">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                            <span>데이터를 불러오는 중...</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="table-footer">
-                        <div class="table-info">
-                            <span id="paginationInfo" class="text-muted">-</span>
-                        </div>
-                        <div class="pagination-container">
-                            <div class="pagination" id="pagination">
-                                <!-- 페이지네이션이 여기에 생성됩니다 -->
+                    <div class="advanced-filters" id="advancedFilters" style="display: none;">
+                        <div class="filter-row">
+                            <div class="filter-item">
+                                <label>등록일 범위</label>
+                                <div class="range-inputs">
+                                    <input type="date" id="startDate" placeholder="시작일">
+                                    <span>~</span>
+                                    <input type="date" id="endDate" placeholder="종료일">
+                                </div>
                             </div>
+                            <div class="filter-item">
+                                <label>지역</label>
+                                <select id="regionFilter">
+                                    <option value="">모든 지역</option>
+                                    <option value="서울">서울</option>
+                                    <option value="경기">경기</option>
+                                    <option value="인천">인천</option>
+                                    <option value="부산">부산</option>
+                                    <option value="대구">대구</option>
+                                    <option value="대전">대전</option>
+                                    <option value="광주">광주</option>
+                                    <option value="울산">울산</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-primary" onclick="Suppliers.applyFilters()">
+                                <i class="fas fa-search"></i> 검색
+                            </button>
+                            <button class="btn btn-secondary" onclick="Suppliers.resetFilters()">
+                                <i class="fas fa-undo"></i> 초기화
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 공급업체 목록 -->
+            <div class="data-panel">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <h3><i class="fas fa-list"></i> 공급업체 목록</h3>
+                        <span class="result-count" id="totalCount">총 0개</span>
+                    </div>
+                    <div class="panel-actions">
+                        <div class="view-toggle">
+                            <button class="view-btn active" onclick="Suppliers.setViewMode('table')" data-view="table">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <button class="view-btn" onclick="Suppliers.setViewMode('card')" data-view="card">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                        </div>
+                        <div class="sort-controls">
+                            <select id="sortBy" onchange="Suppliers.applySorting()">
+                                <option value="company_name">업체명순</option>
+                                <option value="created_at">등록일순</option>
+                                <option value="rating">평점순</option>
+                                <option value="contact_person">담당자순</option>
+                            </select>
+                            <button class="sort-direction" onclick="Suppliers.toggleSortDirection()" id="sortDirection">
+                                <i class="fas fa-sort-alpha-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-content">
+                    <!-- 테이블 뷰 -->
+                    <div class="table-view" id="tableView">
+                        <div class="modern-table">
+                            <table class="suppliers-table" id="suppliersTable">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable" onclick="Suppliers.sortTable('company_name')">
+                                            업체 정보 <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th class="sortable" onclick="Suppliers.sortTable('contact_person')">
+                                            담당자 정보 <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th class="sortable" onclick="Suppliers.sortTable('rating')">
+                                            평점 <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th class="sortable" onclick="Suppliers.sortTable('status')">
+                                            상태 <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th class="sortable" onclick="Suppliers.sortTable('created_at')">
+                                            등록일 <i class="fas fa-sort"></i>
+                                        </th>
+                                        <th class="actions-col">작업</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="loading-row">
+                                        <td colspan="6">
+                                            <div class="loading-content">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                                <span>로딩 중...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- 카드 뷰 -->
+                    <div class="card-view" id="cardView" style="display: none;">
+                        <div class="suppliers-grid" id="suppliersGrid">
+                            <!-- 카드들이 여기에 동적으로 생성됩니다 -->
+                        </div>
+                    </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="pagination-container">
+                        <div class="pagination-info" id="paginationInfo">
+                            <!-- 페이지 정보가 여기에 표시됩니다 -->
+                        </div>
+                        <div class="pagination" id="pagination">
+                            <!-- 페이지네이션이 여기에 동적으로 생성됩니다 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         `;
     },
 
@@ -816,6 +880,7 @@ const Suppliers = {
             console.error('통계 로드 오류:', error);
         }
     }
+    currentFilters: {}
 };
 
 // 전역으로 등록
