@@ -430,6 +430,10 @@ const API = {
             return API.get('/reports/dashboard');
         },
 
+        async getDashboardStats() {
+            return API.get('/reports/dashboard');
+        },
+
         async getInventoryReport(params = {}) {
             return API.get('/reports/inventory', params);
         },

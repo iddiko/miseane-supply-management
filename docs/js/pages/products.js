@@ -346,7 +346,11 @@ const Products = {
             Utils.hideLoading();
 
             if (response.success) {
-                this.currentData = response.data.products || response.data;
+                this.currentData = response.data.products || response.data || [];
+                // 배열인지 확인
+                if (!Array.isArray(this.currentData)) {
+                    this.currentData = [];
+                }
                 this.renderTable();
 
                 if (response.data.pagination) {
@@ -370,6 +374,11 @@ const Products = {
     renderTable() {
         const tbody = document.querySelector('#productsTable tbody');
         if (!tbody) return;
+
+        // 배열 확인
+        if (!Array.isArray(this.currentData)) {
+            this.currentData = [];
+        }
 
         // 통계 업데이트
         this.updateStats();
